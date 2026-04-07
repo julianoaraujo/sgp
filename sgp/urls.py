@@ -17,6 +17,7 @@ urlpatterns = [
     path('', include('projetos.urls')),
     path('avaliacoes/', include('avaliacoes.urls')),
     path('carteiras/', include('carteira.urls')),
+    path('', include('auditoria.urls')),
     
     path('api/auth/login/', obtain_auth_token, name='api_token_auth'),
 ]

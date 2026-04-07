@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Adicionar Projetos - Carteira {{ carteira.titulo }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="bi bi-plus-circle"></i> Adicionar Projetos à Carteira</h3>
+        <p class="text-muted">Carteira: <strong>{{ carteira.titulo }}</strong> ({{ carteira.ano }}/{{ carteira.periodo }})</p>
+        <hr>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Projetos priorizados disponíveis</span>
+            <small class="text-muted">Apenas projetos com status PRIORIZADO</small>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;"></th>
+                            <th>Projeto</th>
+                            <th>Pontuação</th>
+                            <th>Demandante</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for projeto in projetos_disponiveis %}
+                        <tr>
+                            <td>
+                                <input class="form-check-input" type="checkbox" name="projetos" value="{{ projeto.id }}">
+                            </td>
+                            <td>{{ projeto.titulo }}</td>
+                            <td><strong>{{ projeto.pontuacao_total|default:'-' }}</strong></td>
+                            <td>{{ projeto.demandante.get_full_name|default:projeto.demandante.username }}</td>
+                            <td><span class="badge bg-primary">{{ projeto.get_status_display }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                <p class="mt-2 mb-0">Nenhum projeto priorizado disponível</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'carteira_detail' carteira.id %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> Adicionar selecionados
+        </button>
+    </div>
+</form>
+{% endblock %}

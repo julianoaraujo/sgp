@@ -5,8 +5,194 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <h2><i class="bi bi-briefcase"></i> Carteiras de Projetos</h2>
-        <p class="text-muted">Em desenvolvimento...</p>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="bi bi-briefcase"></i> Carteiras de Projetos</h2>
+            {% if user.perfil == 'GERENTE_PORTFOLIO' %}
+            <a href="{% url 'carteira_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nova Carteira
+            </a>
+            {% endif %}
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total de Carteiras</h6>
+                        <h2 class="mb-0">{{ total_carteiras }}</h2>
+                    </div>
+                    <i class="bi bi-briefcase-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Em Consolidação</h6>
+                        <h2 class="mb-0">{{ em_consolidacao }}</h2>
+                    </div>
+                    <i class="bi bi-hourglass-split" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Validadas</h6>
+                        <h2 class="mb-0">{{ validadas }}</h2>
+                    </div>
+                    <i class="bi bi-check-circle-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Aprovadas</h6>
+                        <h2 class="mb-0">{{ aprovadas }}</h2>
+                    </div>
+                    <i class="bi bi-trophy-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="q" placeholder="Buscar carteira..." value="{{ request.GET.q }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="ano">
+                            <option value="">Todos os Anos</option>
+                            {% for ano in anos_disponiveis %}
+                            <option value="{{ ano }}" {% if request.GET.ano == ano|stringformat:"s" %}selected{% endif %}>{{ ano }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="status">
+                            <option value="">Todos os Status</option>
+                            <option value="EM_CONSOLIDACAO" {% if request.GET.status == 'EM_CONSOLIDACAO' %}selected{% endif %}>Em Consolidação</option>
+                            <option value="EM_VALIDACAO" {% if request.GET.status == 'EM_VALIDACAO' %}selected{% endif %}>Em Validação</option>
+                            <option value="EM_DELIBERACAO" {% if request.GET.status == 'EM_DELIBERACAO' %}selected{% endif %}>Em Deliberação</option>
+                            <option value="APROVADA" {% if request.GET.status == 'APROVADA' %}selected{% endif %}>Aprovada</option>
+                            <option value="REJEITADA" {% if request.GET.status == 'REJEITADA' %}selected{% endif %}>Rejeitada</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Carteira</th>
+                                <th>Ano/Período</th>
+                                <th>Gerente</th>
+                                <th>Projetos</th>
+                                <th>Orçamento</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for carteira in carteiras %}
+                            <tr>
+                                <td>
+                                    <strong>{{ carteira.titulo }}</strong><br>
+                                    <small class="text-muted">{{ carteira.descricao|truncatewords:10 }}</small>
+                                </td>
+                                <td>{{ carteira.ano }}/{{ carteira.periodo }}</td>
+                                <td>{{ carteira.gerente_portfolio.get_full_name|default:carteira.gerente_portfolio.username }}</td>
+                                <td><span class="badge bg-primary">{{ carteira.total_projetos }}</span></td>
+                                <td>R$ {{ carteira.orcamento_projetos|default:0|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if carteira.status == 'APROVADA' %}bg-success
+                                        {% elif carteira.status == 'REJEITADA' %}bg-danger
+                                        {% elif carteira.status == 'EM_VALIDACAO' %}bg-info
+                                        {% elif carteira.status == 'EM_DELIBERACAO' %}bg-warning
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ carteira.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'carteira_detail' carteira.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p class="mt-2">Nenhuma carteira encontrada</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if carteiras.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if carteiras.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ carteiras.previous_page_number }}">Anterior</a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in carteiras.paginator.page_range %}
+                        <li class="page-item {% if carteiras.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if carteiras.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ carteiras.next_page_number }}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

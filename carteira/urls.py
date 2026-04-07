@@ -1,11 +1,12 @@
 from django.urls import path
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-@login_required
-def carteira_list(request):
-    return render(request, 'carteira_list.html', {})
+from . import views
 
 urlpatterns = [
-    path('', carteira_list, name='carteira_list'),
+    path('', views.carteira_list, name='carteira_list'),
+    path('<int:pk>/', views.carteira_detail, name='carteira_detail'),
+    path('nova/', views.carteira_create, name='carteira_create'),
+    path('<int:pk>/adicionar-projeto/', views.carteira_adicionar_projeto, name='carteira_adicionar_projeto'),
+    path('<int:pk>/remover-projeto/<int:projeto_id>/', views.carteira_remover_projeto, name='carteira_remover_projeto'),
+    path('<int:pk>/validar/', views.carteira_validar, name='carteira_validar'),
+    path('<int:pk>/deliberar/', views.carteira_deliberar, name='carteira_deliberar'),
 ]

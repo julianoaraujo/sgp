@@ -83,12 +83,12 @@
             </div>
             <div class="card-body">
                 <p><strong>Status:</strong><br>
-                <span class="badge bg-{{ avaliacao.status == 'CONCLUIDA' and 'success' or 'warning' }}">
+                <span class="badge {% if avaliacao.status == 'CONCLUIDA' %}bg-success{% else %}bg-warning{% endif %}">
                     {{ avaliacao.get_status_display }}
                 </span></p>
 
                 <p><strong>Avaliador:</strong><br>
-                {{ avaliacao.avaliador.get_full_name }}</p>
+                {{ avaliacao.avaliador.get_full_name|default:avaliacao.avaliador.username }}</p>
 
                 <p><strong>Data de Início:</strong><br>
                 {{ avaliacao.data_inicio|date:"d/m/Y H:i" }}</p>

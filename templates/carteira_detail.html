@@ -17,13 +17,33 @@
 
 <div class="row">
     <div class="col-md-8">
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="mb-0"><i class="bi bi-briefcase"></i> {{ carteira.titulo }}</h4>
-                <span class="badge bg-{{ carteira.status == 'APROVADA' and 'success' or 'warning' }}">
+                <span class="badge {% if carteira.status == 'APROVADA' %}bg-success{% elif carteira.status == 'REJEITADA' %}bg-danger{% elif carteira.status == 'EM_VALIDACAO' %}bg-info{% elif carteira.status == 'EM_DELIBERACAO' %}bg-warning{% else %}bg-secondary{% endif %}">
                     {{ carteira.get_status_display }}
                 </span>
             </div>
+
+        <div class="d-flex gap-2 mb-3">
+            {% if user.perfil == 'GERENTE_PORTFOLIO' and carteira.status == 'EM_CONSOLIDACAO' %}
+            <a class="btn btn-outline-primary" href="{% url 'carteira_adicionar_projeto' carteira.id %}">
+                <i class="bi bi-plus-circle"></i> Adicionar projetos
+            </a>
+            {% endif %}
+
+            {% if user.perfil == 'COORDENADOR' and carteira.status == 'EM_CONSOLIDACAO' %}
+            <a class="btn btn-outline-success" href="{% url 'carteira_validar' carteira.id %}">
+                <i class="bi bi-clipboard-check"></i> Validar carteira
+            </a>
+            {% endif %}
+
+            {% if user.perfil == 'PRESIDENCIA' and carteira.status == 'EM_VALIDACAO' %}
+            <a class="btn btn-outline-warning" href="{% url 'carteira_deliberar' carteira.id %}">
+                <i class="bi bi-gavel"></i> Deliberar carteira
+            </a>
+            {% endif %}
+        </div>
             <div class="card-body">
                 <p><strong>Descrição:</strong></p>
                 <p>{{ carteira.descricao }}</p>
@@ -122,7 +142,10 @@
                 {{ carteira.projetos.count }}</p>
 
                 <p><strong>Projetos Incluídos:</strong><br>
-                {{ carteira.projetos.filter(incluido_carteira=True).count }}</p>
+                {{ stats.projetos_incluidos }}</p>
+
+                <p><strong>Projetos Excluídos:</strong><br>
+                {{ stats.projetos_excluidos }}</p>
             </div>
         </div>
     </div>

@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.utils import timezone
 from .models import Projeto
 from auditoria.models import Notificacao
+from auditoria.notifications import notificar_projeto_submetido
 
 
 @login_required
@@ -37,6 +38,12 @@ def dashboard(request):
         status='NAO_LIDA'
     ).order_by('-data_criacao')[:5]
     
+    # Contador de notificações não lidas
+    notificacoes_nao_lidas = Notificacao.objects.filter(
+        destinatario=request.user,
+        status='NAO_LIDA'
+    ).count()
+    
     context = {
         'total_projetos': total_projetos,
         'projetos_aceitos': projetos_aceitos,
@@ -44,6 +51,7 @@ def dashboard(request):
         'carteiras_ativas': carteiras_ativas,
         'projetos_recentes': projetos_recentes,
         'notificacoes': notificacoes,
+        'notificacoes_nao_lidas': notificacoes_nao_lidas,
     }
     
     return render(request, 'dashboard.html', context)
@@ -153,6 +161,9 @@ def projeto_submeter(request, pk):
     projeto.status = 'SUBMETIDO'
     projeto.data_submissao = timezone.now()
     projeto.save()
+    
+    # Notificar SUPRN
+    notificar_projeto_submetido(projeto)
     
     messages.success(request, 'Projeto submetido com sucesso! Aguardando avaliação.')
     return redirect('projeto_detail', pk=projeto.pk)

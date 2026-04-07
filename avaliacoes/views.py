@@ -6,6 +6,11 @@ from django.db.models import Q
 from decimal import Decimal
 from .models import Avaliacao, Viabilidade, Priorizacao
 from projetos.models import Projeto
+from auditoria.notifications import (
+    notificar_avaliacao_concluida,
+    notificar_viabilidade_concluida,
+    notificar_priorizacao_concluida
+)
 
 
 @login_required
@@ -99,6 +104,9 @@ def avaliacao_create(request, projeto_id):
                 projeto.status = 'EM_AVALIACAO'
                 projeto.save()
             
+            # Notificar demandante e gerentes
+            notificar_avaliacao_concluida(avaliacao)
+            
             messages.success(request, 'Avaliação criada com sucesso!')
             return redirect('avaliacao_detail', pk=avaliacao.pk)
             
@@ -122,6 +130,8 @@ def viabilidade_create(request, projeto_id):
     
     if request.method == 'POST':
         try:
+            resultado = request.POST.get('resultado')
+            
             viabilidade = Viabilidade.objects.create(
                 projeto=projeto,
                 analista=request.user,
@@ -133,17 +143,25 @@ def viabilidade_create(request, projeto_id):
                 analise_financeira=request.POST.get('analise_financeira', ''),
                 analise_operacional=request.POST.get('analise_operacional', ''),
                 analise_juridica=request.POST.get('analise_juridica', ''),
-                resultado=request.POST.get('resultado'),
+                resultado=resultado,
                 riscos_identificados=request.POST.get('riscos_identificados', ''),
                 restricoes=request.POST.get('restricoes', ''),
                 status='CONCLUIDA'
             )
             
-            if projeto.status == 'EM_AVALIACAO':
-                projeto.status = 'EM_VIABILIDADE'
-                projeto.save()
+            # Atualizar status do projeto baseado no resultado da viabilidade
+            if resultado == 'VIAVEL' or resultado == 'VIAVEL_COM_RESTRICOES':
+                projeto.status = 'EM_PRIORIZACAO'
+                messages.success(request, 'Análise de viabilidade concluída! Projeto aprovado para priorização.')
+            else:
+                projeto.status = 'REJEITADO'
+                messages.warning(request, 'Projeto considerado inviável e foi rejeitado.')
             
-            messages.success(request, 'Análise de viabilidade criada com sucesso!')
+            projeto.save()
+            
+            # Notificar demandante e gerentes
+            notificar_viabilidade_concluida(viabilidade)
+            
             return redirect('projeto_detail', pk=projeto.pk)
             
         except Exception as e:
@@ -195,10 +213,13 @@ def priorizacao_create(request, projeto_id):
                 pontuacao_total += avaliacao.pontuacao_parcial
             
             projeto.pontuacao_total = pontuacao_total
-            projeto.status = 'EM_PRIORIZACAO'
+            projeto.status = 'PRIORIZADO'
             projeto.save()
             
-            messages.success(request, f'Priorização criada com sucesso! Pontuação total: {pontuacao_total}')
+            # Notificar demandante e coordenadores
+            notificar_priorizacao_concluida(priorizacao)
+            
+            messages.success(request, f'Priorização criada com sucesso! Pontuação total: {pontuacao_total}. Projeto priorizado e pronto para consolidação em carteira.')
             return redirect('projeto_detail', pk=projeto.pk)
             
         except Exception as e:

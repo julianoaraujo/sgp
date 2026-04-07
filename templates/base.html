@@ -50,6 +50,17 @@
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'notificacao_list' %}" title="Notificações">
+                            <i class="bi bi-bell"></i>
+                            {% if notificacoes_nao_lidas > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ notificacoes_nao_lidas }}
+                                <span class="visually-hidden">notificações não lidas</span>
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
