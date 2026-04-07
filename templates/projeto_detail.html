@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ projeto.titulo }} - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projeto_list' %}">Projetos</a></li>
+                <li class="breadcrumb-item active">{{ projeto.titulo }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-folder"></i> {{ projeto.titulo }}</h4>
+                <div>
+                    {% if projeto.status == 'RASCUNHO' and projeto.demandante == user or user.is_staff %}
+                    <a href="{% url 'projeto_submeter' projeto.id %}" class="btn btn-success" 
+                       onclick="return confirm('Deseja realmente submeter este projeto para avaliação?')">
+                        <i class="bi bi-send"></i> Submeter
+                    </a>
+                    {% endif %}
+                    {% if user.perfil == 'SUPRN' and projeto.status in 'SUBMETIDO,EM_AVALIACAO' %}
+                    <a href="{% url 'avaliacao_create' projeto.id %}" class="btn btn-success">
+                        <i class="bi bi-clipboard-check"></i> Avaliar
+                    </a>
+                    {% endif %}
+                    {% if user.perfil in 'SUPRN,GERENTE_PORTFOLIO' and projeto.status in 'EM_AVALIACAO,EM_VIABILIDADE' %}
+                    <a href="{% url 'viabilidade_create' projeto.id %}" class="btn btn-info">
+                        <i class="bi bi-check-circle"></i> Viabilidade
+                    </a>
+                    {% endif %}
+                    {% if user.perfil in 'GERENTE_PORTFOLIO,COORDENADOR,PRESIDENCIA' and projeto.status in 'EM_VIABILIDADE,EM_PRIORIZACAO' %}
+                    <a href="{% url 'priorizacao_create' projeto.id %}" class="btn btn-primary">
+                        <i class="bi bi-sort-down"></i> Priorizar
+                    </a>
+                    {% endif %}
+                    {% if projeto.demandante == user or user.is_staff %}
+                    <a href="{% url 'projeto_edit' projeto.id %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <h5>Descrição</h5>
+                <p>{{ projeto.descricao }}</p>
+
+                <hr>
+
+                <h5>Justificativa</h5>
+                <p>{{ projeto.justificativa }}</p>
+
+                <hr>
+
+                <h5>Objetivos</h5>
+                <p>{{ projeto.objetivos }}</p>
+
+                <hr>
+
+                <h5>Resultados Esperados</h5>
+                <p>{{ projeto.resultados_esperados }}</p>
+
+                {% if projeto.observacoes %}
+                <hr>
+                <h5>Observações</h5>
+                <p>{{ projeto.observacoes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Status:</strong><br>
+                <span class="badge bg-secondary">{{ projeto.get_status_display }}</span></p>
+
+                <p><strong>Demandante:</strong><br>
+                {{ projeto.demandante.get_full_name }}</p>
+
+                {% if projeto.gerente_projeto %}
+                <p><strong>Gerente:</strong><br>
+                {{ projeto.gerente_projeto.get_full_name }}</p>
+                {% endif %}
+
+                {% if projeto.prioridade %}
+                <p><strong>Prioridade:</strong><br>
+                <span class="badge bg-warning">{{ projeto.get_prioridade_display }}</span></p>
+                {% endif %}
+
+                {% if projeto.pontuacao_total %}
+                <p><strong>Pontuação Total:</strong><br>
+                <span class="badge bg-success">{{ projeto.pontuacao_total }} pontos</span></p>
+                {% endif %}
+
+                <p><strong>Data de Criação:</strong><br>
+                {{ projeto.data_criacao|date:"d/m/Y H:i" }}</p>
+
+                {% if projeto.data_submissao %}
+                <p><strong>Data de Submissão:</strong><br>
+                {{ projeto.data_submissao|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if projeto.orcamento_previsto %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-currency-dollar"></i> Orçamento</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Previsto:</strong><br>
+                R$ {{ projeto.orcamento_previsto|floatformat:2 }}</p>
+
+                {% if projeto.orcamento_realizado %}
+                <p><strong>Realizado:</strong><br>
+                R$ {{ projeto.orcamento_realizado|floatformat:2 }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

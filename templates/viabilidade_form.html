@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Análise de Viabilidade - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-check-circle"></i> Análise de Viabilidade</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Projeto:</strong> {{ projeto.titulo }}
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-gear"></i> Viabilidade Técnica</h5>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_tecnica" 
+                                           id="tec_sim" value="True" required>
+                                    <label class="form-check-label" for="tec_sim">Viável</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_tecnica" 
+                                           id="tec_nao" value="False">
+                                    <label class="form-check-label" for="tec_nao">Inviável</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="analise_tecnica" class="form-label">Análise</label>
+                                <textarea class="form-control" id="analise_tecnica" name="analise_tecnica" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-currency-dollar"></i> Viabilidade Financeira</h5>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_financeira" 
+                                           id="fin_sim" value="True" required>
+                                    <label class="form-check-label" for="fin_sim">Viável</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_financeira" 
+                                           id="fin_nao" value="False">
+                                    <label class="form-check-label" for="fin_nao">Inviável</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="analise_financeira" class="form-label">Análise</label>
+                                <textarea class="form-control" id="analise_financeira" name="analise_financeira" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-people"></i> Viabilidade Operacional</h5>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_operacional" 
+                                           id="op_sim" value="True" required>
+                                    <label class="form-check-label" for="op_sim">Viável</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_operacional" 
+                                           id="op_nao" value="False">
+                                    <label class="form-check-label" for="op_nao">Inviável</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="analise_operacional" class="form-label">Análise</label>
+                                <textarea class="form-control" id="analise_operacional" name="analise_operacional" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-shield-check"></i> Viabilidade Jurídica</h5>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_juridica" 
+                                           id="jur_sim" value="True" required>
+                                    <label class="form-check-label" for="jur_sim">Viável</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="viabilidade_juridica" 
+                                           id="jur_nao" value="False">
+                                    <label class="form-check-label" for="jur_nao">Inviável</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="analise_juridica" class="form-label">Análise</label>
+                                <textarea class="form-control" id="analise_juridica" name="analise_juridica" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <label for="resultado" class="form-label">Resultado Final *</label>
+                        <select class="form-select" id="resultado" name="resultado" required>
+                            <option value="">Selecione...</option>
+                            <option value="VIAVEL">Viável</option>
+                            <option value="VIAVEL_COM_RESTRICOES">Viável com Restrições</option>
+                            <option value="INVIAVEL">Inviável</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="riscos_identificados" class="form-label">Riscos Identificados</label>
+                        <textarea class="form-control" id="riscos_identificados" name="riscos_identificados" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="restricoes" class="form-label">Restrições</label>
+                        <textarea class="form-control" id="restricoes" name="restricoes" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'projeto_detail' projeto.id %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Salvar Análise
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Avaliações - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="bi bi-clipboard-check"></i> Avaliações</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total de Avaliações</h6>
+                        <h2 class="mb-0">{{ total_avaliacoes }}</h2>
+                    </div>
+                    <i class="bi bi-clipboard-check-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Pendentes</h6>
+                        <h2 class="mb-0">{{ avaliacoes_pendentes }}</h2>
+                    </div>
+                    <i class="bi bi-hourglass-split" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Concluídas</h6>
+                        <h2 class="mb-0">{{ avaliacoes_concluidas }}</h2>
+                    </div>
+                    <i class="bi bi-check-circle-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="q" placeholder="Buscar por projeto ou parecer..." value="{{ request.GET.q }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="status">
+                            <option value="">Todos os Status</option>
+                            <option value="PENDENTE" {% if request.GET.status == 'PENDENTE' %}selected{% endif %}>Pendente</option>
+                            <option value="EM_ANALISE" {% if request.GET.status == 'EM_ANALISE' %}selected{% endif %}>Em Análise</option>
+                            <option value="CONCLUIDA" {% if request.GET.status == 'CONCLUIDA' %}selected{% endif %}>Concluída</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Projeto</th>
+                                <th>Avaliador</th>
+                                <th>Status</th>
+                                <th>Etapa A</th>
+                                <th>Etapa B</th>
+                                <th>Total (A+B)</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for avaliacao in avaliacoes %}
+                            <tr>
+                                <td><strong>{{ avaliacao.projeto.titulo }}</strong></td>
+                                <td>{{ avaliacao.avaliador.get_full_name }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if avaliacao.status == 'CONCLUIDA' %}bg-success
+                                        {% elif avaliacao.status == 'EM_ANALISE' %}bg-warning
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ avaliacao.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ avaliacao.pontuacao_etapa_a|default:"-" }}</td>
+                                <td>{{ avaliacao.pontuacao_etapa_b|default:"-" }}</td>
+                                <td><strong>{{ avaliacao.pontuacao_parcial }}</strong></td>
+                                <td>{{ avaliacao.data_inicio|date:"d/m/Y" }}</td>
+                                <td>
+                                    <a href="{% url 'avaliacao_detail' avaliacao.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p class="mt-2">Nenhuma avaliação encontrada</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if avaliacoes.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if avaliacoes.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ avaliacoes.previous_page_number }}">Anterior</a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in avaliacoes.paginator.page_range %}
+                        <li class="page-item {% if avaliacoes.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if avaliacoes.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ avaliacoes.next_page_number }}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

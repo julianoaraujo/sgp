@@ -1,8 +1,11 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
-router = DefaultRouter()
+@login_required
+def carteira_list(request):
+    return render(request, 'carteira_list.html', {})
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', carteira_list, name='carteira_list'),
 ]

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ carteira.titulo }} - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'carteira_list' %}">Carteiras</a></li>
+                <li class="breadcrumb-item active">{{ carteira.titulo }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-briefcase"></i> {{ carteira.titulo }}</h4>
+                <span class="badge bg-{{ carteira.status == 'APROVADA' and 'success' or 'warning' }}">
+                    {{ carteira.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <p><strong>Descrição:</strong></p>
+                <p>{{ carteira.descricao }}</p>
+
+                <hr>
+
+                <h5><i class="bi bi-folder"></i> Projetos na Carteira</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Projeto</th>
+                                <th>Pontuação</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pc in carteira.projetos.all %}
+                            <tr>
+                                <td>{{ pc.posicao_ranking|default:"-" }}</td>
+                                <td>{{ pc.projeto.titulo }}</td>
+                                <td>
+                                    <strong>{{ pc.projeto.pontuacao_total|default:"-" }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ pc.projeto.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'projeto_detail' pc.projeto.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    Nenhum projeto na carteira
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if carteira.observacoes %}
+                <hr>
+                <h5>Observações</h5>
+                <p>{{ carteira.observacoes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Ano:</strong><br>{{ carteira.ano }}</p>
+                <p><strong>Período:</strong><br>{{ carteira.periodo }}</p>
+                <p><strong>Gerente de Portfólio:</strong><br>
+                {{ carteira.gerente_portfolio.get_full_name }}</p>
+
+                {% if carteira.orcamento_total %}
+                <p><strong>Orçamento Total:</strong><br>
+                R$ {{ carteira.orcamento_total|floatformat:2 }}</p>
+                {% endif %}
+
+                <p><strong>Data de Criação:</strong><br>
+                {{ carteira.data_criacao|date:"d/m/Y H:i" }}</p>
+
+                {% if carteira.data_consolidacao %}
+                <p><strong>Data de Consolidação:</strong><br>
+                {{ carteira.data_consolidacao|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+
+                {% if carteira.data_aprovacao %}
+                <p><strong>Data de Aprovação:</strong><br>
+                {{ carteira.data_aprovacao|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Estatísticas</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total de Projetos:</strong><br>
+                {{ carteira.projetos.count }}</p>
+
+                <p><strong>Projetos Incluídos:</strong><br>
+                {{ carteira.projetos.filter(incluido_carteira=True).count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

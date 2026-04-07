@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Perfil - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-person-circle"></i> Meu Perfil</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Nome de Usuário:</strong><br>{{ user.username }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong><br>{{ user.email|default:"-" }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Nome Completo:</strong><br>{{ user.get_full_name|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Perfil:</strong><br>
+                        <span class="badge bg-primary">{{ user.get_perfil_display }}</span></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Setor:</strong><br>{{ user.setor|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Telefone:</strong><br>{{ user.telefone|default:"-" }}</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Matrícula:</strong><br>{{ user.matricula|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Data de Cadastro:</strong><br>{{ user.data_criacao|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

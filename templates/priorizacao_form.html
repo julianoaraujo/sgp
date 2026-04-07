@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Priorização de Projeto - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-sort-down"></i> Priorização de Projeto</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Projeto:</strong> {{ projeto.titulo }}<br>
+                    <strong>Pontuação Atual (A+B):</strong> 
+                    {% if avaliacao %}{{ avaliacao.pontuacao_parcial }} pontos{% else %}Não avaliado{% endif %}
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <h5><i class="bi bi-trophy"></i> Etapa C - Critérios Ponderados (0-60 pontos)</h5>
+                    <div class="mb-3">
+                        <label for="pontuacao_etapa_c" class="form-label">Pontuação *</label>
+                        <input type="number" class="form-control" id="pontuacao_etapa_c" 
+                               name="pontuacao_etapa_c" min="0" max="60" step="0.01" required>
+                        <small class="text-muted">Avalie com base nos critérios ponderados estabelecidos</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="complexidade" class="form-label">Complexidade *</label>
+                                <select class="form-select" id="complexidade" name="complexidade" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="1">1 - Muito Baixa</option>
+                                    <option value="2">2 - Baixa</option>
+                                    <option value="3">3 - Média</option>
+                                    <option value="4">4 - Alta</option>
+                                    <option value="5">5 - Muito Alta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="urgencia" class="form-label">Urgência *</label>
+                                <select class="form-select" id="urgencia" name="urgencia" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="1">1 - Muito Baixa</option>
+                                    <option value="2">2 - Baixa</option>
+                                    <option value="3">3 - Média</option>
+                                    <option value="4">4 - Alta</option>
+                                    <option value="5">5 - Muito Alta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="impacto_estrategico" class="form-label">Impacto Estratégico *</label>
+                                <select class="form-select" id="impacto_estrategico" name="impacto_estrategico" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="1">1 - Muito Baixo</option>
+                                    <option value="2">2 - Baixo</option>
+                                    <option value="3">3 - Médio</option>
+                                    <option value="4">4 - Alto</option>
+                                    <option value="5">5 - Muito Alto</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="recursos_disponiveis" 
+                                       name="recursos_disponiveis" value="True">
+                                <label class="form-check-label" for="recursos_disponiveis">
+                                    Recursos Disponíveis
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="dependencias_externas" 
+                                       name="dependencias_externas" value="True">
+                                <label class="form-check-label" for="dependencias_externas">
+                                    Possui Dependências Externas
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="justificativa" class="form-label">Justificativa *</label>
+                        <textarea class="form-control" id="justificativa" name="justificativa" 
+                                  rows="4" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="observacoes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'projeto_detail' projeto.id %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Salvar Priorização
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Avaliar Projeto - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'avaliacao_list' %}">Avaliações</a></li>
+                <li class="breadcrumb-item active">Nova Avaliação</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-clipboard-check"></i> Avaliar Projeto</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Projeto:</strong> {{ projeto.titulo }}<br>
+                    <strong>Demandante:</strong> {{ projeto.demandante.get_full_name }}
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <h5 class="mt-4"><i class="bi bi-star"></i> Etapa A - Alinhamento Estratégico (0-25 pontos)</h5>
+                    <div class="mb-3">
+                        <label for="pontuacao_etapa_a" class="form-label">Pontuação *</label>
+                        <input type="number" class="form-control" id="pontuacao_etapa_a" 
+                               name="pontuacao_etapa_a" min="0" max="25" step="0.01" required>
+                        <small class="text-muted">Avalie o alinhamento do projeto com os objetivos estratégicos da organização</small>
+                    </div>
+
+                    <h5 class="mt-4"><i class="bi bi-star-fill"></i> Etapa B - Impacto e Benefícios (0-25 pontos)</h5>
+                    <div class="mb-3">
+                        <label for="pontuacao_etapa_b" class="form-label">Pontuação *</label>
+                        <input type="number" class="form-control" id="pontuacao_etapa_b" 
+                               name="pontuacao_etapa_b" min="0" max="25" step="0.01" required>
+                        <small class="text-muted">Avalie o impacto esperado e os benefícios do projeto</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="parecer_tecnico" class="form-label">Parecer Técnico *</label>
+                        <textarea class="form-control" id="parecer_tecnico" name="parecer_tecnico" 
+                                  rows="5" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recomendacoes" class="form-label">Recomendações</label>
+                        <textarea class="form-control" id="recomendacoes" name="recomendacoes" 
+                                  rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'avaliacao_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Salvar Avaliação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

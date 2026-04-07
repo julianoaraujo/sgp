@@ -1,4 +1,5 @@
 from django.db import migrations
+from django.contrib.auth.hashers import make_password
 import secrets
 import string
 
@@ -20,10 +21,9 @@ def create_superuser(apps, schema_editor):
             is_active=True,
             perfil='PRESIDENCIA',
             setor='TI',
-            ativo=True
+            ativo=True,
+            password=make_password(senha_aleatoria)
         )
-        superuser.set_password(senha_aleatoria)
-        superuser.save()
         
         print("\n" + "="*70)
         print("SUPERUSUÁRIO CRIADO COM SUCESSO!")

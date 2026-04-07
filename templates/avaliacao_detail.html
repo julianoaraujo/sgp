@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Avaliação - {{ avaliacao.projeto.titulo }} - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'avaliacao_list' %}">Avaliações</a></li>
+                <li class="breadcrumb-item active">{{ avaliacao.projeto.titulo }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-clipboard-check"></i> Avaliação do Projeto</h4>
+            </div>
+            <div class="card-body">
+                <h5>Projeto: {{ avaliacao.projeto.titulo }}</h5>
+                <p class="text-muted">{{ avaliacao.projeto.descricao|truncatewords:30 }}</p>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6><i class="bi bi-star"></i> Etapa A - Alinhamento Estratégico</h6>
+                                <h3 class="text-primary">
+                                    {{ avaliacao.pontuacao_etapa_a|default:"Não avaliado" }}
+                                    {% if avaliacao.pontuacao_etapa_a %}<small>/25</small>{% endif %}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6><i class="bi bi-star-fill"></i> Etapa B - Impacto e Benefícios</h6>
+                                <h3 class="text-success">
+                                    {{ avaliacao.pontuacao_etapa_b|default:"Não avaliado" }}
+                                    {% if avaliacao.pontuacao_etapa_b %}<small>/25</small>{% endif %}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h6><i class="bi bi-trophy"></i> Pontuação Parcial (A + B)</h6>
+                                <h2>{{ avaliacao.pontuacao_parcial }} <small>/50 pontos</small></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5>Parecer Técnico</h5>
+                <p>{{ avaliacao.parecer_tecnico|default:"Nenhum parecer registrado." }}</p>
+
+                {% if avaliacao.recomendacoes %}
+                <h5>Recomendações</h5>
+                <p>{{ avaliacao.recomendacoes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Status:</strong><br>
+                <span class="badge bg-{{ avaliacao.status == 'CONCLUIDA' and 'success' or 'warning' }}">
+                    {{ avaliacao.get_status_display }}
+                </span></p>
+
+                <p><strong>Avaliador:</strong><br>
+                {{ avaliacao.avaliador.get_full_name }}</p>
+
+                <p><strong>Data de Início:</strong><br>
+                {{ avaliacao.data_inicio|date:"d/m/Y H:i" }}</p>
+
+                {% if avaliacao.data_conclusao %}
+                <p><strong>Data de Conclusão:</strong><br>
+                {{ avaliacao.data_conclusao|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-folder"></i> Projeto</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Título:</strong><br>{{ avaliacao.projeto.titulo }}</p>
+                <p><strong>Demandante:</strong><br>{{ avaliacao.projeto.demandante.get_full_name }}</p>
+                <a href="{% url 'projeto_detail' avaliacao.projeto.id %}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="bi bi-eye"></i> Ver Projeto
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

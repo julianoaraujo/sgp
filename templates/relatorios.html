@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatórios - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="bi bi-file-earmark-bar-graph"></i> Relatórios e Indicadores</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-folder-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Relatório de Projetos</h5>
+                <p class="text-muted">Listagem completa de todos os projetos</p>
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-download"></i> Gerar PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-check text-success" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Relatório de Avaliações</h5>
+                <p class="text-muted">Avaliações realizadas por período</p>
+                <a href="#" class="btn btn-success">
+                    <i class="bi bi-download"></i> Gerar PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-briefcase text-info" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Relatório de Carteiras</h5>
+                <p class="text-muted">Carteiras de projetos consolidadas</p>
+                <a href="#" class="btn btn-info">
+                    <i class="bi bi-download"></i> Gerar PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up text-warning" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Indicadores de Desempenho</h5>
+                <p class="text-muted">KPIs e métricas do portfólio</p>
+                <a href="#" class="btn btn-warning">
+                    <i class="bi bi-download"></i> Gerar Excel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-currency-dollar text-danger" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Relatório Orçamentário</h5>
+                <p class="text-muted">Análise de orçamento e custos</p>
+                <a href="#" class="btn btn-danger">
+                    <i class="bi bi-download"></i> Gerar Excel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-history text-secondary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Histórico de Ações</h5>
+                <p class="text-muted">Logs de auditoria do sistema</p>
+                <a href="#" class="btn btn-secondary">
+                    <i class="bi bi-download"></i> Gerar PDF
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-filter"></i> Filtros Personalizados</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="data_inicio" class="form-label">Data Início</label>
+                            <input type="date" class="form-control" id="data_inicio">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="data_fim" class="form-label">Data Fim</label>
+                            <input type="date" class="form-control" id="data_fim">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status_rel" class="form-label">Status</label>
+                            <select class="form-select" id="status_rel">
+                                <option value="">Todos</option>
+                                <option>Aceito</option>
+                                <option>Em Avaliação</option>
+                                <option>Rejeitado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Projetos - SGP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="bi bi-folder"></i> Projetos</h2>
+            {% if user.perfil == 'DEMANDANTE' or user.is_staff %}
+            <a href="{% url 'projeto_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Novo Projeto
+            </a>
+            {% endif %}
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="q" placeholder="Buscar por título..." value="{{ request.GET.q }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="status">
+                            <option value="">Todos os Status</option>
+                            <option value="RASCUNHO">Rascunho</option>
+                            <option value="SUBMETIDO">Submetido</option>
+                            <option value="EM_AVALIACAO">Em Avaliação</option>
+                            <option value="ACEITO">Aceito</option>
+                            <option value="REJEITADO">Rejeitado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="prioridade">
+                            <option value="">Todas as Prioridades</option>
+                            <option value="BAIXA">Baixa</option>
+                            <option value="MEDIA">Média</option>
+                            <option value="ALTA">Alta</option>
+                            <option value="CRITICA">Crítica</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Demandante</th>
+                                <th>Status</th>
+                                <th>Prioridade</th>
+                                <th>Pontuação</th>
+                                <th>Data Submissão</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for projeto in projetos %}
+                            <tr>
+                                <td><strong>{{ projeto.titulo }}</strong></td>
+                                <td>{{ projeto.demandante.get_full_name }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if projeto.status == 'ACEITO' %}bg-success
+                                        {% elif projeto.status == 'REJEITADO' %}bg-danger
+                                        {% elif projeto.status == 'RASCUNHO' %}bg-secondary
+                                        {% else %}bg-warning{% endif %}">
+                                        {{ projeto.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if projeto.prioridade %}
+                                    <span class="badge 
+                                        {% if projeto.prioridade == 'CRITICA' %}bg-danger
+                                        {% elif projeto.prioridade == 'ALTA' %}bg-warning
+                                        {% elif projeto.prioridade == 'MEDIA' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ projeto.get_prioridade_display }}
+                                    </span>
+                                    {% else %}-{% endif %}
+                                </td>
+                                <td>
+                                    {% if projeto.pontuacao_total %}
+                                    <strong>{{ projeto.pontuacao_total }}</strong>
+                                    {% else %}-{% endif %}
+                                </td>
+                                <td>{{ projeto.data_submissao|date:"d/m/Y"|default:"-" }}</td>
+                                <td>
+                                    <a href="{% url 'projeto_detail' projeto.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if projeto.demandante == user or user.is_staff %}
+                                    <a href="{% url 'projeto_edit' projeto.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p class="mt-2">Nenhum projeto encontrado</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if projetos.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if projetos.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ projetos.previous_page_number }}">Anterior</a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in projetos.paginator.page_range %}
+                        <li class="page-item {% if projetos.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if projetos.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ projetos.next_page_number }}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
