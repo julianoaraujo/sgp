@@ -67,6 +67,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="bi bi-person"></i> Meu Perfil</a></li>
+                            {% if user.is_superuser %}
+                            <li><a class="dropdown-item" href="{% url 'phase_permissions' %}"><i class="bi bi-diagram-3"></i> Fluxo de Negócio</a></li>
+                            {% endif %}
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="post" action="{% url 'logout' %}" style="display: inline;">

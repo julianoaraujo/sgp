@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Usuario
+from .models import Usuario, PhasePermission
 
 
 @admin.register(Usuario)
@@ -15,3 +15,9 @@ class UsuarioAdmin(UserAdmin):
             'fields': ('perfil', 'setor', 'telefone', 'matricula', 'ativo')
         }),
     )
+
+
+@admin.register(PhasePermission)
+class PhasePermissionAdmin(admin.ModelAdmin):
+    list_display = ['phase', 'allowed_perfis']
+    search_fields = ['phase', 'allowed_perfis']

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Fluxo de Negócio - Permissões por Fase{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="bi bi-diagram-3"></i> Fluxo de Negócio - Permissões por Fase</h3>
+        <p class="text-muted">Defina quais perfis podem atuar em cada fase. Separar múltiplos perfis por vírgula (ex.: SUPRN,GERENTE_PORTFOLIO).</p>
+        <hr>
+    </div>
+</div>
+
+<form method="post" class="row">
+    {% csrf_token %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Fase</th>
+                                <th>Perfis Permitidos (separados por vírgula)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for phase in phases %}
+                            <tr>
+                                <td><strong>{{ phase.get_phase_display }}</strong></td>
+                                <td>
+                                    <select class="form-select" name="perfis_{{ phase.phase }}" multiple size="4">
+                                        {% for value,label in perfis_choices %}
+                                        <option value="{{ value }}" {% if value in phase.perfis_list %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Ctrl/Cmd + clique para múltiplos perfis</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Salvar configurações</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

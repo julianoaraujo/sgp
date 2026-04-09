@@ -11,6 +11,7 @@ from auditoria.notifications import (
     notificar_viabilidade_concluida,
     notificar_priorizacao_concluida
 )
+from usuarios.models import perfil_pode_fase
 
 
 @login_required
@@ -63,8 +64,8 @@ def avaliacao_detail(request, pk):
 
 @login_required
 def avaliacao_create(request, projeto_id):
-    if request.user.perfil != 'SUPRN':
-        messages.error(request, 'Apenas usuários SUPRN podem criar avaliações.')
+    if not perfil_pode_fase(request.user, 'AVALIACAO'):
+        messages.error(request, 'Você não tem permissão para criar avaliações.')
         return redirect('projeto_detail', pk=projeto_id)
     
     projeto = get_object_or_404(Projeto, pk=projeto_id)
@@ -118,7 +119,7 @@ def avaliacao_create(request, projeto_id):
 
 @login_required
 def viabilidade_create(request, projeto_id):
-    if request.user.perfil not in ['SUPRN', 'GERENTE_PORTFOLIO']:
+    if not perfil_pode_fase(request.user, 'VIABILIDADE'):
         messages.error(request, 'Você não tem permissão para analisar viabilidade.')
         return redirect('projeto_detail', pk=projeto_id)
     
@@ -172,7 +173,7 @@ def viabilidade_create(request, projeto_id):
 
 @login_required
 def priorizacao_create(request, projeto_id):
-    if request.user.perfil not in ['GERENTE_PORTFOLIO', 'COORDENADOR', 'PRESIDENCIA']:
+    if not perfil_pode_fase(request.user, 'PRIORIZACAO'):
         messages.error(request, 'Você não tem permissão para priorizar projetos.')
         return redirect('projeto_detail', pk=projeto_id)
     

@@ -7,6 +7,7 @@ from django.utils import timezone
 from decimal import Decimal
 from django.db import IntegrityError
 from .models import Carteira, ProjetoCarteira, Validacao
+from usuarios.models import perfil_pode_fase
 from projetos.models import Projeto
 from auditoria.notifications import notificar_carteira_criada, notificar_carteira_validada
 
@@ -173,8 +174,8 @@ def carteira_create(request):
 @login_required
 def carteira_adicionar_projeto(request, pk):
     """Adiciona projeto à carteira"""
-    if request.user.perfil not in ['GERENTE_PORTFOLIO']:
-        messages.error(request, 'Apenas Gerentes de Portfólio podem adicionar projetos.')
+    if not perfil_pode_fase(request.user, 'CONSOLIDACAO'):
+        messages.error(request, 'Você não tem permissão para adicionar projetos nesta fase.')
         return redirect('carteira_detail', pk=pk)
     
     carteira = get_object_or_404(Carteira, pk=pk)
@@ -223,8 +224,8 @@ def carteira_adicionar_projeto(request, pk):
 @login_required
 def carteira_remover_projeto(request, pk, projeto_id):
     """Remove projeto da carteira"""
-    if request.user.perfil not in ['GERENTE_PORTFOLIO']:
-        messages.error(request, 'Apenas Gerentes de Portfólio podem remover projetos.')
+    if not perfil_pode_fase(request.user, 'CONSOLIDACAO'):
+        messages.error(request, 'Você não tem permissão para remover projetos nesta fase.')
         return redirect('carteira_detail', pk=pk)
     
     carteira = get_object_or_404(Carteira, pk=pk)
@@ -249,8 +250,8 @@ def carteira_remover_projeto(request, pk, projeto_id):
 @login_required
 def carteira_validar(request, pk):
     """Validação da carteira pelo coordenador"""
-    if request.user.perfil not in ['COORDENADOR']:
-        messages.error(request, 'Apenas Coordenadores podem validar carteiras.')
+    if not perfil_pode_fase(request.user, 'VALIDACAO'):
+        messages.error(request, 'Você não tem permissão para validar carteiras.')
         return redirect('carteira_detail', pk=pk)
     
     carteira = get_object_or_404(Carteira, pk=pk)
@@ -297,8 +298,8 @@ def carteira_validar(request, pk):
 @login_required
 def carteira_deliberar(request, pk):
     """Deliberação final da carteira pela presidência"""
-    if request.user.perfil not in ['PRESIDENCIA']:
-        messages.error(request, 'Apenas a Presidência pode deliberar sobre carteiras.')
+    if not perfil_pode_fase(request.user, 'DELIBERACAO'):
+        messages.error(request, 'Você não tem permissão para deliberar sobre carteiras.')
         return redirect('carteira_detail', pk=pk)
     
     carteira = get_object_or_404(Carteira, pk=pk)
